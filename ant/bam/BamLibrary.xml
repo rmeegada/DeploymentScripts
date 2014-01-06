@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<project name="BAMDeploy" default="execute">
+	<property environment="env"/>
+	<property file="build.properties"/>
+	
+	<taskdef name="ICommandTask" classname="com.oracle.oraclebam.services.icommand.ICommandTask">
+		<classpath>
+			<pathelement location="lib/ICommandTask.jar"/>
+			<pathelement location="${fmw.home}/oepe_11.1.1.8.0/plugins/org.apache.axis_1.4.0.v201005080400/lib/axis.jar"/>
+			<pathelement location="${fmw.home}/oepe_11.1.1.8.0/plugins/javax.xml.rpc_1.1.0.v201005080400/lib/jaxrpc.jar"/>
+			<pathelement location="${fmw.home}/Oracle_OSB1/harvester/lib/commons-discovery-0.2.jar"/>
+			<pathelement location="${fmw.home}/oracle_common/modules/org.apache.commons.logging_1.0.4.jar"/>
+			<pathelement location="${fmw.home}/oracle_common/modules/oracle.webservices_11.1.1/orawsdl.jar"/>
+			<pathelement location="${fmw.home}/oracle_common/OPatch/oplan/jlib/jaxb/activation.jar"/>
+			<pathelement location="lib/mailapi.jar"/>
+		</classpath>
+	</taskdef>
+
+	<macrodef name="bamDeploy">
+		<attribute name="project"/>
+		<sequential><echo>--------------------------------------------------------------</echo>
+			<echo>| Executing task on BAM ICommand Web Service</echo>
+			<echo>--------------------------------------------------------------</echo>
+			<copy file="${bam.commandFile.location}/${bam.commandFile.name}" todir="temp">
+			</copy>
+
+			<replace file="temp/${bam.commandFile.name}" token="BAM_SOURCE_LOCATION" value="${bam.source}"></replace>
+			<replace file="temp/${bam.commandFile.name}" token="FILE_NAME" value="@{project}"></replace>
+			<loadfile srcfile="${bam.source}/@{project}.xml" property="bam.inline.content">
+				<filterchain>
+					<linecontains negate="true">
+						<contains value='&lt;?xml version="1.0"?&gt;'/>
+					</linecontains>	
+				</filterchain>			
+			</loadfile>
+			<replace file="temp/${bam.commandFile.name}" token="INLINE_CONTENT" value="${bam.inline.content}"></replace>
+			<ICommandTask bamhost="${bam.host}" bamport="${bam.port}"
+                bamcommandfilename="temp/${bam.commandFile.name}"
+                bamresponsefilename="temp/${bam.responseFileName}"
+                username="${bam.user}" password="${bam.password}" 
+				bamVersion="${bam.version}"/>
+				<loadfile srcfile="temp/${bam.responseFileName}" property="bam.log"/>
+				<echo message="-----------Log message-------${line.separator}${bam.log}"/>
+			<delete dir="temp"/>
+		</sequential>
+
+	</macrodef>
+</project>

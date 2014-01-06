@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OracleBAMCommands continueonerror="1">
+<!-- import dataobjects -->
+
+<Import inline="1">
+INLINE_CONTENT
+</Import>
+
+
+</OracleBAMCommands>
+

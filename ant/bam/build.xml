@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="bamDeployment" basedir="." >
+ <path id="antcontrib.path">
+      <pathelement path="lib/ant-contrib-1.0b3.jar" />
+    </path>
+	 <taskdef classpathref="antcontrib.path" 
+             resource="net/sf/antcontrib/antlib.xml"/>
+	<target name="deployToBAM">
+	<condition property="list.bamprojects" value="${bam.projects}" else="${bam.option}">
+		<equals arg1="${bam.option}" arg2="ALL"/>
+	</condition>
+	
+		<foreach list="${list.bamprojects}" target="deploySingleBAMProject" param="param.project"/>
+	</target>
+	<import file="BamLibrary.xml"/>
+	<target name="deploySingleBAMProject" >
+		<bamDeploy project="${param.project}"/>
+	</target>
+	
+	</project>
+
