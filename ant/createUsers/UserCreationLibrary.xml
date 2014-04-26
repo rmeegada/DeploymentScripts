@@ -1,0 +1,44 @@
+<project name="UserCreationLibrary">
+	<property environment="env"/>
+	<path id="library.wlst">
+		<fileset dir="${weblogic.home}/server/lib">
+			<include name="weblogic.jar"/>
+		</fileset>
+	</path>
+
+	<taskdef name="wlst"
+            classpathref="library.wlst"
+            classname="weblogic.ant.taskdefs.management.WLSTTask"/>
+	<!-- Define the classpath which includes the jars that are required for foreach task -->
+	<path id="project.classpath">
+		<pathelement location="${antcontrib.location}" />
+	</path>
+
+	<!-- Define class paths to for-each and  -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="project.classpath"/> 
+	<macrodef name="CreateUser">
+		<attribute name="wlst.userscript.name" default="createUser.py"/>
+		<attribute name="wlst.userscript.location" default="./"/>
+		<attribute name="username" />
+		<attribute name="password" />
+		<attribute name="group" />
+		<attribute name="description" />
+		<attribute name="properties" />
+		<sequential>
+		<echo message="@{username}"/>
+			<wlst fileName="@{wlst.userscript.location}/@{wlst.userscript.name}" debug="true" failOnError="false"   classpathref="library.wlst"
+              arguments="${user.url} ${admin.username} ${admin.password} @{username} @{password} @{group} @{description} @{properties}">
+				<script>
+			  url=sys.argv[1]
+			  admin_username=sys.argv[2]
+			  admin_password=sys.argv[3]
+			  username_param=sys.argv[4]
+			  password_param=sys.argv[5]
+			  group=sys.argv[6]
+			  description=sys.argv[7]
+			  property=sys.argv[8]
+				</script>
+			</wlst> 
+		</sequential>
+	</macrodef> 
+</project>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="UserCreation" basedir="." default="createUsers">
+
+<property file="build.properties"/>
+	<import file="UserCreationLibrary.xml"/>
+	<!-- Define the classpath which includes the jars that are required for foreach task -->
+	<path id="antcontrib.path">
+		<pathelement location="${antcontrib.location}" />
+	</path>
+	<!-- Define class paths to for-each and  -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="antcontrib.path"/> 
+	<!-- *************Below target is used to create a new user ************* -->
+	<target name="createUsers">
+		<if>
+			<equals arg1="${users.option}" arg2="ALL" />
+			<then>
+				<echo message="Creating the all the users in the list"/>
+				<property name="list.users" value="${users.list}"/>
+			</then>
+			<else>
+				<echo message="Creating the user ${users.option}" />
+				<property name="list.users" value="${users.option}"/>
+			</else>
+		</if>
+		<foreach list="${list.users}" target="createUser" param="user"/>
+	</target>
+
+	<target name="createUser">
+		<propertycopy name="username" from="${user}.username"/>
+		<propertycopy name="uc_password" from="${user}.password"/>
+		<propertycopy name="group" from="${user}.group"/>
+		<propertycopy name="description" from="${user}.description"/>
+		<propertycopy name="property" from="${user}.property"/>
+		<CreateUser username="${username} " password="${uc_password} " group="${group} " 
+					description="${description}" properties="${property}" />
+	</target>
+
+	
+</project>
+
